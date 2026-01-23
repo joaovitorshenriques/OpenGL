@@ -1,0 +1,11 @@
+# Ignora binários de build
+build/
+
+# Ignora bibliotecas em geral
+*.a
+*.lib
+*.dll
+
+# EXCETO o que estiver em external
+!external/
+!external/**

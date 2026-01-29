@@ -3,28 +3,31 @@
   "tasks": [
     {
       "type": "shell",
-      "label": "OpenGL: Compilar Projeto Moderno",
+      "label": "OpenGL: Compilar com FreeGLUT",
       "command": "C:/mingw64/bin/g++.exe",
       "args": [
         "-g",
         "-std=c++17",
         "-I${workspaceFolder}/external/include",
         "-L${workspaceFolder}/external/lib",
-        "${workspaceFolder}/src/main.cpp",
-        "${workspaceFolder}/src/glad.c",
-        "-lglfw3dll",
+        "${workspaceFolder}/src/*.cpp", 
+        "-lfreeglut",
+        "-lopengl32",
+        "-lglu32",
         "-o",
         "${workspaceFolder}/build/main.exe"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "problemMatcher": [],
+      "problemMatcher": [
+        "$gcc"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true
       },
-      "detail": "Compilador configurado para MinGW64 com GLFW"
+      "detail": "Compilador configurado para MinGW64 com FreeGLUT (UFOP)"
     }
   ]
 }

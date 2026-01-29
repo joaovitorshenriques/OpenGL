@@ -1,66 +1,118 @@
+#include <GL/freeglut.h>
 #include <iostream>
-#include <cmath> // Necessário para sin() e cos()
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+#include <cmath>
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
+// Configurações de Estado
+bool cameraSendoSeguida = false;
+float posX = 0.0f, posZ = 0.0f; // Posição do personagem
+float angulo = 0.0f;           // Rotação do personagem
+float vel = 0.5f;              // Velocidade de translação
 
-// Protótipo da função de callback para redimensionamento da janela
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-    glViewport(0, 0, width, height);
+// Protótipos (Você deve implementar o carregador OBJ aqui depois)
+void desenhaTerreno() {
+    glBegin(GL_QUADS);
+    glColor3f(0.2f, 0.5f, 0.2f); // Verde (pode usar textura aqui)
+    glVertex3f(-50.0f, 0.0f, -50.0f);
+    glVertex3f(-50.0f, 0.0f,  50.0f);
+    glVertex3f( 50.0f, 0.0f,  50.0f);
+    glVertex3f( 50.0f, 0.0f, -50.0f);
+    glEnd();
 }
 
-int main() {
-    // 1. Inicialização do GLFW
-    if (!glfwInit()) {
-        std::cout << "Falha ao inicializar GLFW.\n";
-        return -1;
-    }
+void desenhaPersonagem() {
+    glPushMatrix();
+        glTranslatef(posX, 0.5f, posZ);
+        glRotatef(angulo, 0.0f, 1.0f, 0.0f);
+        
+        // Substitua este cubo pelo seu modelo OBJ usando carregarArquivo2.cpp
+        glColor3f(0.0f, 0.0f, 1.0f);
+        glutSolidCube(1.0f); 
+        
+        // Pequeno "nariz" para saber para onde ele está olhando
+        glTranslatef(0, 0, 0.6f);
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glutSolidCube(0.2f);
+    glPopMatrix();
+}
 
-    // Configurações do contexto OpenGL (Versão 3.3 Core Profile)
-    glfwWindowHint(GLFW_SAMPLES, 4); // Anti-aliasing
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+void configurarIluminacao() {
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    GLfloat lightPos[] = { 0.0f, 10.0f, 0.0f, 1.0f };
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+    glEnable(GL_COLOR_MATERIAL); // Facilita usar glColor com iluminação
+}
 
-    // 2. Criação da Janela
-    GLFWwindow* window = glfwCreateWindow(800, 600, "OpenGL Test - Dynamic Colors", NULL, NULL);
-    if (window == NULL) {
-        std::cout << "Falha ao criar a janela GLFW.\n";
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
+void mudaTamanho(int w, int h) {
+    // Previne divisão por zero
+    if (h == 0) h = 1;
+    float aspecto = (float)w / (float)h;
+
+    // Define a projeção (a lente da câmera)
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
     
-    // Define a função de callback para quando a janela for redimensionada
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    // Configura o volume de visão: ângulo, aspecto, perto, longe
+    gluPerspective(45.0, aspecto, 0.1, 500.0);
 
-    // 3. Inicialização do GLAD (Carrega os ponteiros das funções OpenGL)
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cout << "Falha ao inicializar GLAD.\n";
-        return -1;
+    // Volta para o modo de desenho de objetos
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glLoadIdentity();
+
+    if (cameraSendoSeguida) {
+        // Câmera atrás e acima: calcula posição baseada na rotação do personagem
+        float camX = posX - sin(angulo * M_PI / 180.0) * 10.0f;
+        float camZ = posZ - cos(angulo * M_PI / 180.0) * 10.0f;
+        gluLookAt(camX, 5.0f, camZ, posX, 1.0f, posZ, 0, 1, 0);
+    } else {
+        // Câmera fixa (visão geral)
+        gluLookAt(0, 40, 50, 0, 0, 0, 0, 1, 0);
     }
 
-    // 4. Loop de Renderização Principal
-    while (!glfwWindowShouldClose(window)) {
-        // --- Lógica de Cores Dinâmicas ---
-        float timeValue = glfwGetTime(); // Tempo em segundos desde o início
-        
-        // As funções sin e cos retornam valores entre -1.0 e 1.0. 
-        // Ajustamos para o intervalo 0.0 a 1.0 para as cores (RGB).
-        float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-        float blueValue = (cos(timeValue) / 2.0f) + 0.5f;
+    desenhaTerreno();
+    desenhaPersonagem();
 
-        // Define a cor de fundo (R, G, B, A)
-        glClearColor(0.1f, greenValue, blueValue, 1.0f);
-        
-        // Limpa o buffer de cor
-        glClear(GL_COLOR_BUFFER_BIT);
+    glutSwapBuffers();
+}
 
-        // --- Troca de Buffers e Eventos ---
-        glfwSwapBuffers(window); // Troca o buffer de desenho pelo buffer de exibição
-        glfwPollEvents();        // Verifica eventos de entrada (teclado/mouse)
+void teclado(unsigned char key, int x, int y) {
+    switch (key) {
+        case 'w': case 'W': // Anda para frente na direção da rotação
+            posX += sin(angulo * M_PI / 180.0) * vel;
+            posZ += cos(angulo * M_PI / 180.0) * vel;
+            break;
+        case 'a': case 'A': angulo += 5.0f; break; // Gira
+        case 'd': case 'D': angulo -= 5.0f; break; // Gira
+        case 'c': case 'C': cameraSendoSeguida = !cameraSendoSeguida; break;
+        case 27: exit(0); break; // ESC
     }
+    glutPostRedisplay();
+}
 
-    // 5. Finalização
-    glfwTerminate();
+void inicializar() {
+    glClearColor(0.5f, 0.8f, 1.0f, 1.0f); // Céu azul
+    glEnable(GL_DEPTH_TEST);
+    configurarIluminacao();
+}
+
+int main(int argc, char** argv) {
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+    glutInitWindowSize(1024, 768);
+    glutCreateWindow("Trabalho Final CG - UFOP");
+
+    inicializar();
+
+    glutDisplayFunc(display);
+    glutKeyboardFunc(teclado);
+    glutReshapeFunc(mudaTamanho);
+    
+    glutMainLoop();
     return 0;
 }

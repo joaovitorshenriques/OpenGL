@@ -2,5 +2,3 @@
 #include <iostream>
 #include <cmath>
 #include "ObjLoader.h" 
-
-

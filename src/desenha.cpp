@@ -1,6 +1,37 @@
+#include "ObjLoader.h"
+#include "Entidade.h"
+#include <GL/freeglut.h>
+
+extern Entidade vaca;
+extern Entidade ufo;
+
+
 bool cameraSendoSeguida = false;
-float posX = 0.0f, posZ = 0.0f;
 float angulo = 0.0f;          
+
+
+void desenhaEntidade(const Entidade& e) {
+    if(e.modelo == nullptr) return;
+
+    glPushMatrix();
+
+    glTranslatef(e.x, e.y, e.z);
+    glRotatef();
+    glScalef(e.scale, e.scale, e.scale)
+
+    e.modelo -> draw();
+
+    glPopMatrix();
+}
+
+void desenhaVaca(){
+    desenhaEntidade(vaca);
+}
+
+void desenhaUFO(){
+    desenhaEntidade(ufo);
+}
+
 
 
 void desenhaTerreno() {
@@ -13,21 +44,6 @@ void desenhaTerreno() {
     glEnd();
 }
 
-void desenhaPersonagem() {
-    glPushMatrix();
-        glTranslatef(posX, 0.5f, posZ);
-        glRotatef(angulo, 0.0f, 1.0f, 0.0f);
-        
-      
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glutSolidCube(1.0f); 
-        
-      
-        glTranslatef(0, 0, 0.6f);
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glutSolidCube(0.2f);
-    glPopMatrix();
-}
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -44,7 +60,7 @@ void display() {
     }
 
     desenhaTerreno();
-    desenhaPersonagem();
-
+    desenhaVaca();
+    desenhaUFO();
     glutSwapBuffers();
 }

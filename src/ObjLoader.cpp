@@ -20,11 +20,38 @@ bool ObjLoader::load(const std::string& filename) {
     return true;
 }
 
-// Método para renderizar o objeto
 void ObjLoader::draw() const {
+
+    glColor3f(0.8f, 0.8f, 0.8f); // cinza claro (visível)
+
+    for (const auto& face : faces) {
+
+        // A maioria dos OBJ usa triângulos
+        glBegin(face.size() == 3 ? GL_TRIANGLES : GL_POLYGON);
+
+        for (const auto& vertexIndex : face) {
+
+            // Normal (se existir)
+            if (vertexIndex.size() > 2 && vertexIndex[2] >= 0) {
+                glNormal3fv(&normais[vertexIndex[2]][0]);
+            }
+
+            // Vértice
+            glVertex3fv(&vertices[vertexIndex[0]][0]);
+        }
+
+        glEnd();
+    }
+}
+
+
+// Método para renderizar o objeto
+/*void ObjLoader::draw() const {
     // Ativar a textura
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, this->texture);
+    glDisable(GL_TEXTURE_2D);
+
 
     for (const auto& face : faces) {
         glBegin(GL_POLYGON); // ou GL_TRIANGLES se necessário
@@ -46,7 +73,7 @@ void ObjLoader::draw() const {
         glEnd();
     }
     glDisable(GL_TEXTURE_2D); // Desativa a textura após renderizar
-}
+}*/
 
 
 // Método auxiliar para processar linhas do arquivo
@@ -80,8 +107,13 @@ void ObjLoader::processLine(const std::string& line) {
             std::vector<GLint> indices;
 
             while (std::getline(vertexStream, index, '/')) {
-                indices.push_back(std::stoi(index) - 1); // Ajuste de índice
+                if (index.empty()) {
+                    indices.push_back(-1); 
+                } else {
+                    indices.push_back(std::stoi(index) - 1);
+                }
             }
+
 
             face.push_back(indices);
         }

@@ -2,10 +2,19 @@
 #include "stb_image.h"
 #include "ObjLoader.h"
 #include "Entidade.h"
+#include "jogo.h"
 #include <GL/freeglut.h>
+#include <iostream>
+#include <cmath>
+
 
 extern Entidade vaca;
 extern Entidade ufo;
+
+extern bool cameraSendoSeguida;
+extern float posX;
+extern float posZ;
+extern float angulo;
 
 GLuint texGrama;
 
@@ -73,7 +82,6 @@ void desenhaEntidade(const Entidade& e) {
     glPushMatrix();
 
     glTranslatef(e.x, e.y, e.z);
-    glRotatef();
     glScalef(e.scale, e.scale, e.scale);
 
     e.modelo -> draw();
@@ -89,9 +97,7 @@ void desenhaUFO(){
     desenhaEntidade(ufo);
 }
 
-
-
-void desenhaTerreno() {
+/*void desenhaTerreno() {
     glBegin(GL_QUADS);
     glColor3f(0.2f, 0.5f, 0.2f); 
     glVertex3f(-50.0f, 0.0f, -50.0f);
@@ -99,34 +105,44 @@ void desenhaTerreno() {
     glVertex3f( 50.0f, 0.0f,  50.0f);
     glVertex3f( 50.0f, 0.0f, -50.0f);
     glEnd();
-}
+}*/
 
 
 void inicializa(){
 
-    texGrama = carregarTextura("external/textures/grama.jpg");
+    texGrama = carregarTextura("textures/grama.jpg");
     if (texGrama == 0) {
         std::cout << "Aviso: Textura do gramado não encontrada!" << std::endl;
     }
 
 }
 
+constexpr float PI = 3.14159265359f;
+
+
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
+    gluPerspective(
+        60.0,        
+        800.0 / 600.0, 
+        0.1,         
+        1000.0       
+    );
 
-    if (cameraSendoSeguida) {
-       
-        float camX = posX - sin(angulo * M_PI / 180.0) * 10.0f;
-        float camZ = posZ - cos(angulo * M_PI / 180.0) * 10.0f;
-        gluLookAt(camX, 5.0f, camZ, posX, 1.0f, posZ, 0, 1, 0);
-    } else {
-        
-        gluLookAt(0, 40, 50, 0, 0, 0, 0, 1, 0);
-    }
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(
+        0.0, 20.0, 40.0,   
+        0.0, 0.0, 0.0,     
+        0.0, 1.0, 0.0      
+    );
 
-    desenhaTerreno();
+    desenhaTerreno(50.0f, texGrama);
     desenhaVaca();
     desenhaUFO();
+
     glutSwapBuffers();
 }

@@ -4,6 +4,7 @@
 #include "ObjLoader.h" 
 #include "jogo.h"
 #include "desenha.h"
+#include "camera.h"
 
 int main(int argc, char** argv){
     glutInit(&argc, argv);
@@ -24,6 +25,8 @@ int main(int argc, char** argv){
     inicializa();
 
     glutDisplayFunc(display);
+    glutMouseFunc(mouseClick);
+    glutMotionFunc(mouseMove);
 
     glutMainLoop();
     return 0;

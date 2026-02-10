@@ -6,6 +6,7 @@
 #include <GL/freeglut.h>
 #include <iostream>
 #include <cmath>
+#include "camera.h"
 
 
 extern Entidade vaca;
@@ -58,7 +59,7 @@ GLuint carregarTextura(const char* filename) {
     return textureID;
 }
 
-void desenhaTerreno(float size, GLuint texturaID) {
+/*void desenhaTerreno(float size, GLuint texturaID) {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texturaID);
     
@@ -74,7 +75,7 @@ void desenhaTerreno(float size, GLuint texturaID) {
     glEnd();
 
     glDisable(GL_TEXTURE_2D);
-}
+}*/
 
 void desenhaEntidade(const Entidade& e) {
     if(e.modelo == nullptr) return;
@@ -97,7 +98,7 @@ void desenhaUFO(){
     desenhaEntidade(ufo);
 }
 
-/*void desenhaTerreno() {
+void desenhaTerreno() {
     glBegin(GL_QUADS);
     glColor3f(0.2f, 0.5f, 0.2f); 
     glVertex3f(-50.0f, 0.0f, -50.0f);
@@ -105,15 +106,53 @@ void desenhaUFO(){
     glVertex3f( 50.0f, 0.0f,  50.0f);
     glVertex3f( 50.0f, 0.0f, -50.0f);
     glEnd();
-}*/
+}
 
+void desenhaGrama(float x, float z) {
+    float h = 0.5f;
+    float w = 0.1f;
+
+    glColor3f(0.1f, 0.7f, 0.1f);
+
+    glBegin(GL_QUADS);
+        glVertex3f(x - w, 0.0f, z);
+        glVertex3f(x + w, 0.0f, z);
+        glVertex3f(x + w, h, z);
+        glVertex3f(x - w, h, z);
+    glEnd();
+
+    glBegin(GL_QUADS);
+        glVertex3f(x, 0.0f, z - w);
+        glVertex3f(x, 0.0f, z + w);
+        glVertex3f(x, h, z + w);
+        glVertex3f(x, h, z - w);
+    glEnd();
+}
+
+void quantGrama(float maxX, float maxZ) {
+    for(float x = -maxX; x < maxX; x += 1.5f){
+        
+        for(float z = -maxZ; z < maxZ; z += 1.5f){
+
+            float randOffsetX = ((rand() % 100) / 100.0f - 0.5f) * 0.6f;
+            float randOffsetZ = ((rand() % 100) / 100.0f - 0.5f) * 0.6f;
+
+            desenhaGrama(x + randOffsetX, z + randOffsetZ);
+        }
+    }
+        
+            
+}
 
 void inicializa(){
 
-    texGrama = carregarTextura("textures/grama.jpg");
+    /*texGrama = carregarTextura("textures/grama.jpg");
     if (texGrama == 0) {
         std::cout << "Aviso: Textura do gramado não encontrada!" << std::endl;
-    }
+    }*/
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
 }
 
@@ -132,15 +171,26 @@ void display() {
         1000.0       
     );
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+    float radRot = camRot * PI / 180.0f;
+    float radInc = camInc * PI / 180.0f;
+
+    float targetX = vaca.x;
+    float targetY = vaca.y + 2.0f;
+    float targetZ = vaca.z;
+
+    float camX = targetX + camDist * cos(radInc) * sin(radRot);
+    float camY = targetY + camDist * sin(radInc);
+    float camZ = targetZ + camDist * cos(radInc) * cos(radRot);
+
     gluLookAt(
-        0.0, 20.0, 40.0,   
-        0.0, 0.0, 0.0,     
-        0.0, 1.0, 0.0      
+        camX, camY, camZ,
+        targetX, targetY, targetZ,
+        0.0f, 1.0f, 0.0f
     );
 
-    desenhaTerreno(50.0f, texGrama);
+
+    desenhaTerreno();
+    quantGrama(100, 100);
     desenhaVaca();
     desenhaUFO();
 

@@ -129,19 +129,22 @@ void desenhaGrama(float x, float z) {
     glEnd();
 }
 
-void quantGrama(float maxX, float maxZ) {
-    for(float x = -maxX; x < maxX; x += 1.5f){
-        
-        for(float z = -maxZ; z < maxZ; z += 1.5f){
+void quantGrama(int colunas, int linhas) {
+    float tamanho = 50.0f; 
+    float margem = 0.1f;   
+    
+    float stepX = (tamanho * 2 - (margem * 2)) / (colunas - 1);
+    float stepZ = (tamanho * 2 - (margem * 2)) / (linhas - 1);
 
-            float randOffsetX = ((rand() % 100) / 100.0f - 0.5f) * 0.6f;
-            float randOffsetZ = ((rand() % 100) / 100.0f - 0.5f) * 0.6f;
+    for (int i = 0; i < colunas; i++) {
+        for (int j = 0; j < linhas; j++) {
 
-            desenhaGrama(x + randOffsetX, z + randOffsetZ);
+            float posX = (-tamanho + margem) + (i * stepX);
+            float posZ = (-tamanho + margem) + (j * stepZ);
+            
+            desenhaGrama(posX, posZ);
         }
     }
-        
-            
 }
 
 void inicializa(){

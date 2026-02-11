@@ -1,13 +1,32 @@
-void teclado(unsigned char key, int x, int y) {
-    switch (key) {
-        case 'w': case 'W': // Anda para frente na direção da rotação
-            posX += sin(angulo * M_PI / 180.0) * vel;
-            posZ += cos(angulo * M_PI / 180.0) * vel;
+#include <GL/freeglut.h>
+
+extern float vacaX;
+extern float vacaZ;
+
+void teclado(unsigned char tecla, int x, int y) {
+    float velocidade = 0.5f;
+    float limite = 49.5f; // Para não sair do terreno de 50.0
+
+    switch (tecla) {
+        case 'w': case 'W':
+            vacaZ -= velocidade;
             break;
-        case 'a': case 'A': angulo += 5.0f; break; // Gira
-        case 'd': case 'D': angulo -= 5.0f; break; // Gira
-        case 'c': case 'C': cameraSendoSeguida = !cameraSendoSeguida; break;
-        case 27: exit(0); break; // ESC
+        case 's': case 'S':
+            vacaZ += velocidade;
+            break;
+        case 'a': case 'A':
+            vacaX -= velocidade;
+            break;
+        case 'd': case 'D':
+            vacaX += velocidade;
+            break;
     }
+
+    // Impede a vaca de sair do terreno
+    if (vacaX > limite)  vacaX = limite;
+    if (vacaX < -limite) vacaX = -limite;
+    if (vacaZ > limite)  vacaZ = limite;
+    if (vacaZ < -limite) vacaZ = -limite;
+
     glutPostRedisplay();
 }

@@ -5,6 +5,7 @@
 #include "jogo.h"
 #include "desenha.h"
 #include "camera.h"
+#include "funcsTeclado.h"
 
 int main(int argc, char** argv){
     glutInit(&argc, argv);
@@ -27,6 +28,7 @@ int main(int argc, char** argv){
     glutDisplayFunc(display);
     glutMouseFunc(mouseClick);
     glutMotionFunc(mouseMove);
+    glutKeyboardFunc(teclado);
 
     glutMainLoop();
     return 0;

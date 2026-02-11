@@ -16,6 +16,9 @@ extern bool cameraSendoSeguida;
 extern float posX;
 extern float posZ;
 extern float angulo;
+float vacaX = 0.0f;
+float vacaY = 0.0f;
+float vacaZ = 0.0f;
 
 GLuint texGrama;
 
@@ -91,11 +94,19 @@ void desenhaEntidade(const Entidade& e) {
 }
 
 void desenhaVaca(){
+    vaca.x = vacaX;
+    vaca.y = vacaY;
+    vaca.z = vacaZ;
     desenhaEntidade(vaca);
+    glPushMatrix();
+    glTranslatef(vacaX, vacaY, vacaZ);
+    glPopMatrix();
 }
 
 void desenhaUFO(){
     desenhaEntidade(ufo);
+    glPushMatrix();
+    glPopMatrix();
 }
 
 void desenhaTerreno() {
@@ -177,9 +188,9 @@ void display() {
     float radRot = camRot * PI / 180.0f;
     float radInc = camInc * PI / 180.0f;
 
-    float targetX = vaca.x;
-    float targetY = vaca.y + 2.0f;
-    float targetZ = vaca.z;
+    float targetX = vacaX;
+    float targetY = vacaY + 2.0f;
+    float targetZ = vacaZ;
 
     float camX = targetX + camDist * cos(radInc) * sin(radRot);
     float camY = targetY + camDist * sin(radInc);
@@ -191,7 +202,7 @@ void display() {
         0.0f, 1.0f, 0.0f
     );
 
-
+    glMatrixMode(GL_MODELVIEW);
     desenhaTerreno();
     quantGrama(100, 100);
     desenhaVaca();

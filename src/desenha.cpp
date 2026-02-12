@@ -19,7 +19,7 @@ extern float angulo;
 float vacaX = 0.0f;
 float vacaY = 0.0f;
 float vacaZ = 0.0f;
-
+extern float vacaRot;
 GLuint textureUFO;
 GLuint textureVaca;
 
@@ -94,13 +94,36 @@ void desenhaEntidade(const Entidade& e) {
     glPopMatrix();
 }
 
+float normalizaAngulo(float a) {
+    while (a < 0) a += 360;
+    while (a >= 360) a -= 360;
+    return a;
+}
+
+float menorDelta(float atual, float alvo) {
+
+    float diff = alvo - atual;
+
+    while (diff > 180) diff -= 360;
+    while (diff < -180) diff += 360;
+
+    return diff;
+}
+
 void desenhaVaca(){
     vaca.x = vacaX;
     vaca.y = vacaY;
     vaca.z = vacaZ;
-    desenhaEntidade(vaca);
+    static float rotAtual = 0;
+    vacaRot = normalizaAngulo(vacaRot);
+    rotAtual = normalizaAngulo(rotAtual);
+    float delta = menorDelta(rotAtual, vacaRot);
+    rotAtual += delta * 0.15f;
     glPushMatrix();
     glTranslatef(vacaX, vacaY, vacaZ);
+    glRotatef(rotAtual + 90.0f,0,1,0);
+    glScalef(vaca.scale, vaca.scale, vaca.scale);
+    vaca.modelo -> draw();
     glPopMatrix();
 }
 

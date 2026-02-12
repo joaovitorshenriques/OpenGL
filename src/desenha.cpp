@@ -160,11 +160,19 @@ void atualizarAliens() {
     }
 }
 
+void desenhaAlien(const Entidade& a) {
+    glPushMatrix();
+    glTranslatef(a.x, a.y, a.z);
+    glScalef(a.scale, a.scale, a.scale);
+    glCallList(alienList);
+    glPopMatrix();
+}
+
 
 void desenhaTodosAliens() {
     for (int i = 0; i < 20; i++) {
         if (aliens[i].y > 0.0f) {
-            desenhaEntidade(aliens[i]);
+            desenhaAlien(aliens[i]);
         }
     }
 }

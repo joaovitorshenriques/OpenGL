@@ -9,6 +9,7 @@ Entidade vaca;
 Entidade ufo;
 const int MAX_ALIENS = 20;
 Entidade aliens[MAX_ALIENS];
+GLuint alienList;
 bool cameraSendoSeguida = false;
 float posX = 0.0f;
 float posZ = 0.0f;
@@ -19,6 +20,11 @@ void Inicializa(){
     vacaModel.load("models/cow.obj");
     ufoModel.load("models/UFO.obj");
     alienModel.load("models/alien_11.obj");
+
+    alienList = glGenLists(1);
+    glNewList(alienList, GL_COMPILE);
+        alienModel.draw();
+    glEndList();
 
     vaca.modelo = &vacaModel;
     vaca.x = 0.0f;
@@ -37,4 +43,5 @@ void Inicializa(){
         aliens[i].y = -10.0f;
         aliens[i].scale = 0.3f;
     }
+
 }

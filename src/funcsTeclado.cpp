@@ -54,6 +54,4 @@ void teclado(unsigned char tecla, int x, int y) {
     if (vacaX < -limite) vacaX = -limite;
     if (vacaZ > limite)  vacaZ = limite;
     if (vacaZ < -limite) vacaZ = -limite;
-
-    glutPostRedisplay();
 }

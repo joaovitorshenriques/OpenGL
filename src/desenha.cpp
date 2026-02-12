@@ -11,7 +11,6 @@
 
 extern Entidade vaca;
 extern Entidade ufo;
-
 extern bool cameraSendoSeguida;
 extern float posX;
 extern float posZ;
@@ -20,6 +19,13 @@ float vacaX = 0.0f;
 float vacaY = 0.0f;
 float vacaZ = 0.0f;
 extern float vacaRot;
+extern Entidade aliens[];
+extern int MAX_ALIENS;
+extern ObjLoader alienModel;
+
+float tempoUltimoDrop = 0.0f;
+int proximoAlien = 0;
+
 GLuint textureUFO;
 GLuint textureVaca;
 
@@ -133,6 +139,36 @@ void desenhaUFO(){
     glPopMatrix();
 }
 
+void atualizarAliens() {
+    float tempoAtual = glutGet(GLUT_ELAPSED_TIME) / 1000.0f;
+
+    if (tempoAtual - tempoUltimoDrop > 3.0f) {
+        aliens[proximoAlien].x = ufo.x;
+        aliens[proximoAlien].y = ufo.y;
+        aliens[proximoAlien].z = ufo.z;
+        
+        proximoAlien = (proximoAlien + 1) % 20;
+        tempoUltimoDrop = tempoAtual;
+    }
+
+    for (int i = 0; i < 20; i++) {
+        
+        if (aliens[i].y > -5.0f) {
+            aliens[i].y -= 0.15f;
+        }
+        
+    }
+}
+
+
+void desenhaTodosAliens() {
+    for (int i = 0; i < 20; i++) {
+        if (aliens[i].y > 0.0f) {
+            desenhaEntidade(aliens[i]);
+        }
+    }
+}
+
 void desenhaTerreno() {
     glBegin(GL_QUADS);
     glColor3f(0.2f, 0.5f, 0.2f); 
@@ -205,7 +241,7 @@ constexpr float PI = 3.14159265359f;
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+    atualizarAliens();
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(
@@ -237,6 +273,7 @@ void display() {
     quantGrama(100, 100);
     desenhaVaca();
     desenhaUFO();
-
+    desenhaTodosAliens();
     glutSwapBuffers();
+    glutPostRedisplay();
 }

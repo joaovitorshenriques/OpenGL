@@ -20,7 +20,7 @@ bool ObjLoader::load(const std::string& filename) {
     return true;
 }
 
-void ObjLoader::draw() const {
+/*void ObjLoader::draw() const {
 
     glColor3f(0.8f, 0.8f, 0.8f); // cinza claro (visível)
 
@@ -42,15 +42,14 @@ void ObjLoader::draw() const {
 
         glEnd();
     }
-}
+}*/
 
 
 // Método para renderizar o objeto
-/*void ObjLoader::draw() const {
+void ObjLoader::draw() const {
     // Ativar a textura
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, this->texture);
-    glDisable(GL_TEXTURE_2D);
 
 
     for (const auto& face : faces) {
@@ -73,7 +72,7 @@ void ObjLoader::draw() const {
         glEnd();
     }
     glDisable(GL_TEXTURE_2D); // Desativa a textura após renderizar
-}*/
+}
 
 
 // Método auxiliar para processar linhas do arquivo

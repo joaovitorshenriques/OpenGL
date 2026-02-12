@@ -15,7 +15,7 @@ float angulo = 0.0f;
 
 
 void Inicializa(){
-    vacaModel.load("models/LP_cow.obj");
+    vacaModel.load("models/cow.obj");
     ufoModel.load("models/UFO.obj");
 
 
@@ -23,7 +23,7 @@ void Inicializa(){
     vaca.x = 0.0f;
     vaca.y = 0.0f;
     vaca.z = 0.0f;
-    vaca.scale = 2.0f; 
+    vaca.scale = 0.002f; 
 
     ufo.modelo = &ufoModel;
     ufo.x = 0.0f;

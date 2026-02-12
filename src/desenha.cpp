@@ -20,7 +20,8 @@ float vacaX = 0.0f;
 float vacaY = 0.0f;
 float vacaZ = 0.0f;
 
-GLuint texGrama;
+GLuint textureUFO;
+GLuint textureVaca;
 
 GLuint carregarTextura(const char* filename) {
     int width, height, channels;
@@ -164,6 +165,12 @@ void inicializa(){
     if (texGrama == 0) {
         std::cout << "Aviso: Textura do gramado não encontrada!" << std::endl;
     }*/
+    textureVaca = carregarTextura("textures/texVaca.jpg");
+    vacaModel.setTexture(textureVaca);
+
+    textureUFO = carregarTextura("textures/texUFO.jpg");
+    ufoModel.setTexture(textureUFO);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
